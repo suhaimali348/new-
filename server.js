@@ -5,11 +5,10 @@ console.log('WebSocket server running on ws://localhost:3000');
 
 wss.on('connection', ws => {
   console.log('Client connected');
-
   const interval = setInterval(() => {
-    const msg = new Date().toLocaleTimeString();
+    const msg = 'Server time: ' + new Date().toLocaleTimeString();
     ws.send(msg);
-  }, 5000);
+  }, 1000); // send every second
 
   ws.on('close', () => {
     console.log('Client disconnected');

@@ -1,22 +1,22 @@
 ﻿(() => {
   const ws = new WebSocket('ws://localhost:3000');
 
-  ws.onopen = () => {
+  ws.addEventListener('open', () => {
     console.log('WebSocket connected');
-  };
+  });
 
-  ws.onmessage = event => {
-    const timeDisplay = document.getElementById('timeDisplay');
-    if (timeDisplay) {
-      timeDisplay.textContent = event.data;  // Update only the timeDisplay div
+  ws.addEventListener('message', event => {
+    const liveDataDiv = document.getElementById('timeDisplay');
+    if (liveDataDiv) {
+      liveDataDiv.textContent = event.data;
     }
-  };
+  });
 
-  ws.onerror = error => {
+  ws.addEventListener('error', error => {
     console.error('WebSocket error:', error);
-  };
+  });
 
-  ws.onclose = () => {
+  ws.addEventListener('close', () => {
     console.log('WebSocket connection closed');
-  };
+  });
 })();
