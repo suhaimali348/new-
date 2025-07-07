@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUHAIM SOFT</title>
+
+    <!-- Favicon -->
+     <link rel="icon" href="images/medicine.png">
+   
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- intl-tel-input CSS for Country Code Dropdown -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+
+    <!-- CSS Styles -->
+    <style>
+        /* --- THEME COLOR VARIABLES --- */
+        :root {
+            /* Light Theme (Default) */
+            --bg-primary: #0d1b2a; /* Dark sections background */
+            --bg-secondary: #1b263b; /* Dark sections card background */
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #333;
+            --text-light: #f1faee;
+            --text-muted: #666;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --accent-color: #00a896;
+            --accent-hover: #02c39a;
+            --whatsapp-color: #25D366;
+            --whatsapp-hover: #128C7E;
+            --navbar-bg: rgba(13, 27, 42, 0.8);
+        }
+
+        body.dark-theme {
+            /* Dark Theme */
+            --bg-primary: #0d1b2a;
+            --bg-secondary: #1b263b;
+            --bg-light: #0d1b2a;
+            --bg-white: #1b263b;
+            --text-dark: #f1faee;
+            --text-light: #f1faee;
+            --text-muted: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --navbar-bg: rgba(13, 27, 42, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        /* --- Preloader Styles --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d1b2a;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 8px solid #1b263b;
+            border-top: 8px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Navbar Styles --- */
+        .navbar {
+            background-color: var(--navbar-bg); backdrop-filter: blur(10px);
+            padding: 15px 5%; position: sticky; top: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-right-cluster { display: flex; align-items: center; gap: 20px; }
+        .logo { font-size: 26px; font-weight: 700; color: #f1faee; text-decoration: none; }
+        .logo i { color: var(--accent-color); margin-right: 8px; }
+        .nav-links { display: flex; list-style-type: none; gap: 25px; align-items: center; }
+        .nav-links a { color: #f1faee; text-decoration: none; font-size: 17px; font-weight: 400; position: relative; transition: color 0.3s ease; }
+        .nav-links a:not(.btn-nav)::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            background-color: var(--accent-color); bottom: -5px; left: 50%;
+            transform: translateX(-50%); transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .hamburger { display: none; cursor: pointer; z-index: 1001; }
+        .hamburger .bar { display: block; width: 28px; height: 3px; margin: 5px auto; background-color: #f1faee; transition: all 0.3s ease-in-out; }
+        .hamburger.active .bar:nth-child(2) { opacity: 0; }
+        .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        
+        /* --- Theme Toggle Switch --- */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
+        .theme-switch input { display: none; }
+        .slider { background-color: #4a4a4a; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 28px; }
+        .slider:before {
+            background-color: #fff; bottom: 4px; content: ""; height: 20px; left: 4px;
+            position: absolute; transition: .4s; width: 20px; border-radius: 50%;
+            background-image: url('https://api.iconify.design/solar:sun-bold.svg'); background-repeat: no-repeat; background-position: center;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+            background-image: url('https://api.iconify.design/solar:moon-bold.svg');
+        }
+
+        /* --- Header Section with 3D Globe --- */
+        .header {
+            position: relative; height: 95vh; display: flex; justify-content: center; align-items: center;
+            text-align: center; color: #f1faee; padding: 0 5%; overflow: hidden;
+        }
+        #vanta-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .header-content {
+            position: relative; z-index: 1; max-width: 800px;
+            background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; backdrop-filter: blur(5px);
+        }
+        .header-content h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; margin-bottom: 20px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); animation: fadeInDown 1s ease-out; }
+        .header-content p { font-size: clamp(1rem, 2.5vw, 1.25rem); margin-bottom: 40px; font-weight: 300; animation: fadeInUp 1s ease-out 0.3s; animation-fill-mode: both; }
+        .btn { padding: 14px 35px; background-color: var(--accent-color); color: #f1faee; font-size: 18px; font-weight: 600; text-decoration: none; border-radius: 50px; transition: all 0.3s ease; display: inline-block; border: 2px solid var(--accent-color); box-shadow: 0 4px 15px rgba(0, 168, 150, 0.4); }
+        .btn:hover { background-color: var(--accent-hover); transform: translateY(-5px) scale(1.05); box-shadow: 0 6px 20px rgba(2, 195, 154, 0.5); }
+
+        /* --- Generic Section Styles --- */
+        .section { padding: 100px 5%; text-align: center; transition: background-color 0.3s ease; }
+        .section-title { font-size: clamp(2.2rem, 5vw, 2.8rem); font-weight: 700; margin-bottom: 20px; position: relative; display: inline-block; color: var(--text-dark); }
+        .section-title::after { content: ''; position: absolute; width: 80px; height: 4px; background-color: var(--accent-color); bottom: -10px; left: 50%; transform: translateX(-50%); border-radius: 2px; }
+        .section-subtitle { font-size: clamp(1rem, 2.5vw, 1.1rem); max-width: 700px; margin: 0 auto 60px auto; color: var(--text-muted); }
+        
+        #features { background-color: var(--bg-primary); }
+        #features .section-title, #features .feature h3 { color: var(--text-light); }
+        #features .section-subtitle, #features .feature p { color: #bbb; }
+        #welcome { background-color: var(--bg-light); }
+        
+        /* --- Welcome Section --- */
+        .welcome-content { max-width: 900px; margin: 0 auto; text-align: left; font-size: 1.1rem; line-height: 1.8; color: var(--text-muted); }
+        .welcome-content p { margin-bottom: 20px; }
+
+        /* --- Process Section --- */
+        #process { background-color: var(--bg-white); }
+        .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 50px; justify-content: center; }
+        .process-step { background: var(--bg-light); padding: 30px; border-radius: 15px; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .process-step:hover { transform: translateY(-10px); box-shadow: 0 15px 30px var(--shadow-color); }
+        .process-step .step-number { font-size: 2rem; font-weight: 700; color: var(--accent-color); background: rgba(0, 168, 150, 0.1); width: 60px; height: 60px; line-height: 60px; border-radius: 50%; margin: 0 auto 20px auto; }
+        .process-step h3 { font-size: 1.4rem; color: var(--text-dark); margin-bottom: 10px; }
+        .process-step p { color: var(--text-muted); }
+        
+        /* --- Features Section --- */
+        .feature-box { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px; 
+            margin-top: 50px; 
+            justify-content: center;
+        }
+        .feature { background-color: var(--bg-secondary); padding: 40px 30px; border-radius: 15px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .feature:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0, 168, 150, 0.2); }
+        .feature i { font-size: 50px; color: var(--accent-color); margin-bottom: 20px; display: block; }
+        .feature h3 { font-size: clamp(1.2rem, 4vw, 1.4rem); }
+        
+        /* --- Tangible Results / Benefits Section --- */
+        #benefits { background-color: var(--bg-light); }
+        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 50px auto 0; }
+        .benefit-card {
+            background: var(--bg-white); padding: 30px; border-radius: 15px;
+            border-left: 5px solid var(--accent-color); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left; box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        .benefit-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 20px 40px var(--shadow-color); }
+        .benefit-card .benefit-stat {
+            font-size: clamp(3rem, 8vw, 3.5rem);
+            font-weight: 800; color: var(--text-dark);
+            line-height: 1; margin-bottom: 5px;
+        }
+        .benefit-card h3 { font-size: 1.3rem; color: var(--text-dark); margin-bottom: 10px; }
+        .benefit-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+        
+        /* --- Footer & Enroll Form --- */
+        .footer { background-color: var(--bg-primary); color: #f1faee; padding: 80px 5% 40px 5%; text-align: center; }
+        .footer-enroll-form {
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+        .footer-enroll-form h4 {
+            font-size: clamp(1.5rem, 5vw, 1.8rem);
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .footer-enroll-form p {
+            margin-bottom: 30px;
+            color: #bbb;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            color: var(--text-light);
+            font-size: 16px;
+        }
+        .iti { width: 100%; }
+        .iti__country-list { background-color: #2a3a4a; border-color: rgba(255, 255, 255, 0.2); }
+        .iti__country:hover { background-color: var(--bg-primary); }
+        .iti_country, .iti_dial-code { color: var(--text-light); }
+        .iti--allow-dropdown input { padding-left: 52px !important; }
+
+        .whatsapp-submit-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            background-color: var(--whatsapp-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .whatsapp-submit-btn:hover {
+            background-color: var(--whatsapp-hover);
+            transform: translateY(-3px);
+        }
+
+        .social-icons { margin-bottom: 20px; }
+        .social-icons a { color: #f1faee; font-size: 24px; margin: 0 15px; text-decoration: none; display: inline-block; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-icons a:hover { color: var(--accent-color); transform: translateY(-5px); }
+        
+        /* --- Scroll to Top Button --- */
+        .scroll-to-top {
+            position: fixed; bottom: 20px; right: 20px; background-color: var(--accent-color); color: #f1faee;
+            width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 20px; text-decoration: none; z-index: 999; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(20px);
+        }
+        .scroll-to-top.show { opacity: 1; pointer-events: all; transform: translateY(0); }
+        .scroll-to-top:hover { background-color: var(--accent-hover); transform: translateY(-5px); }
+
+        /* --- WhatsApp Floating Widget --- */
+        .whatsapp-widget { position: fixed; bottom: 80px; right: 20px; z-index: 998; }
+        .whatsapp-button {
+            background-color: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 30px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s ease;
+        }
+        .whatsapp-button:hover { transform: scale(1.1); }
+        .whatsapp-popup {
+            position: absolute; bottom: 75px; right: 0; width: 350px; background-color: #fff;
+            border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); overflow: hidden;
+            opacity: 0; transform: translateY(20px) scale(0.9); pointer-events: none; transition: all 0.3s ease;
+        }
+        .whatsapp-popup.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+        .popup-header { background-color: #075E54; color: white; padding: 15px; display: flex; align-items: center; position: relative; }
+        .popup-header .avatar-img { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid white; }
+        .popup-header .header-text h4 { margin: 0; font-size: 1.1rem; font-weight: 600; color: white; }
+        .popup-close { position: absolute; top: 5px; right: 10px; font-size: 28px; color: white; background: none; border: none; cursor: pointer; opacity: 0.8; }
+        .popup-body {
+            padding: 20px; background-color: #E5DDD5; min-height: 100px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+        .popup-body p { background-color: white; padding: 10px 15px; border-radius: 10px; border-top-left-radius: 0; display: inline-block; max-width: 80%; font-size: 0.95rem; line-height: 1.4; color: #333; }
+        .popup-footer { padding: 15px; background-color: #f0f0f0; text-align: center; }
+        .start-chat-btn {
+            background-color: #25D366; color: white; padding: 12px 25px; border-radius: 50px;
+            text-decoration: none; font-weight: 600; display: inline-flex;
+            align-items: center; gap: 10px; transition: background-color 0.3s ease;
+        }
+        .start-chat-btn i { font-size: 1.2rem; }
+        .start-chat-btn:hover { background-color: #128C7E; }
+
+        /* --- Animations & Media Queries (Responsiveness) --- */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.is-visible { opacity: 1; transform: translateY(0); }
+        
+        @media (max-width: 768px) {
+            .nav-links { 
+                position: fixed; left: -100%; top: 0; flex-direction: column; justify-content: center; 
+                align-items: center; background-color: var(--bg-secondary); width: 100%; height: 100vh; 
+                gap: 40px; transition: left 0.4s ease-in-out; 
+            }
+            .nav-links.active { left: 0; }
+            .hamburger { display: block; z-index: 1001; }
+            .section { padding: 60px 5%; }
+            .section-subtitle { margin-bottom: 40px; }
+            .process-grid, .feature-box, .benefits-grid { gap: 20px; }
+            .header-content h1 { font-size: 2.2rem; }
+            .header-content p { font-size: 1rem; }
+            .theme-switch-wrapper { margin-left: auto; }
+            .nav-right-cluster { gap: 15px; }
+        }
+        
+        @media (max-width: 480px) { 
+            .whatsapp-popup { width: 90vw; right: 5vw; } 
+            .btn { padding: 12px 28px; font-size: 16px; }
+            .logo { font-size: 22px; }
+            .footer { padding: 60px 5% 30px 5%; }
+            .footer-enroll-form { padding: 0; }
+            .whatsapp-submit-btn { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader Screen -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="#home" class="logo"><i class="fa-solid fa-laptop-medical"></i> SUHAIM SOFT</a>
+        <div class="nav-right-cluster">
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#welcome">Welcome</a></li>
+                <li><a href="#process">Process</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+                <li><a href="#enroll-now-footer">Enroll Now</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+             <!-- Theme Switcher -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="theme-toggle">
+                    <input type="checkbox" id="theme-toggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+    <header id="home" class="header">
+        <div id="vanta-bg"></div>
+        <div class="header-content">
+            <h1> Suhaim Soft</h1>
+            <p>SUHAIM SOFT delivers smart, secure, and efficient Electronic Medical Records (EMR) to empower healthcare professionals and improve patient outcomes.</p>
+            <a href="#features" class="btn">Learn More</a>
+        </div>
+    </header>
+    <main>
+        <section id="welcome" class="section">
+            <h2 class="section-title">WELCOME TO SUHAIM SOFT</h2>
+            <p class="section-subtitle">Your Partner in Digital Healthcare Transformation.</p>
+            <div class="welcome-content fade-in">
+                <p>In today's fast-paced medical environment, the most valuable resource is time. Administrative tasks and cumbersome paperwork can divert focus from what truly matters: patient care. SUHAIM SOFT was founded on a simple principle: to give that time back to healthcare professionals.</p>
+                <p>Our intelligent Electronic Medical Record (EMR) system is more than just a digital filing cabinet. It is a powerful, integrated platform designed to streamline your entire workflow, from patient check-in to billing. By automating repetitive tasks, providing actionable insights from patient data, and ensuring rock-solid security, we empower you to practice medicine more efficiently and effectively. Join us in building a smarter, more connected future for healthcare.</p>
+            </div>
+        </section>
+        <section id="process" class="section">
+            <h2 class="section-title">Our Simple Onboarding Process</h2>
+            <p class="section-subtitle">Get started with SUHAIM SOFT in three easy steps.</p>
+            <div class="process-grid">
+                <div class="process-step fade-in"><div class="step-number">1</div><h3>Consult & Demo</h3><p>Request a demo, and our specialists will showcase the platform's power, tailored to your clinic's needs.</p></div>
+                <div class="process-step fade-in" style="transition-delay: 0.2s;"><div class="step-number">2</div><h3>Seamless Integration</h3><p>Our team handles the heavy lifting, migrating your existing data and integrating our EMR into your workflow.</p></div>
+                <div class="process-step fade-in" style="transition-delay: 0.4s;"><div class="step-number">3</div><h3>Training & Support</h3><p>We provide comprehensive training and dedicated support to ensure your team is confident and successful.</p></div>
+            </div>
+        </section>
+        <section id="features" class="section">
+            <h2 class="section-title">Key Features</h2>
+            <p class="section-subtitle">Explore the core functionalities that set our EMR system apart.</p>
+            <div class="feature-box">
+                <div class="feature fade-in"><i class="fas fa-file-prescription"></i><h3>30-Second Prescriptions</h3><p>Generate and finalize complete prescriptions in under 30 seconds with intelligent templates and drug databases.</p></div>
+
+                <div class="feature fade-in" style="transition-delay: 0.4s;"><i class="fas fa-tachometer-alt"></i><h3>Live Appointment Dashboard</h3><p>Staff can manage patient bookings, while doctors see all appointment data in real-time on their dashboard, ensuring perfect sync and preparation.</p></div>
+                <div class="feature fade-in"><i class="fas fa-laptop-house"></i><h3>Digital Consultation Room</h3><p>Conduct secure and efficient patient consultations from anywhere. Our easy-to-use digital EMR provides all the tools you need.</p></div>
+                <div class="feature fade-in" style="transition-delay: 0.2s;"><i class="fas fa-bolt"></i><h3>Fast & Easy to Use</h3><p>Our system is designed for speed and simplicity, allowing your staff to manage clinic operations with minimal training and maximum efficiency.</p></div>
+                <div class="feature fade-in" style="transition-delay: 0.4s;"><i class="fas fa-shield-alt"></i><h3>Secure Platform</h3><p>Built with multiple layers of security to protect your data and ensure HIPAA compliance at all times.</p></div>
+            </div>
+        </section>
+
+        <!-- === TANGIBLE RESULTS SECTION === -->
+        <section id="benefits" class="section">
+            <h2 class="section-title">Tangible Results</h2>
+            <p class="section-subtitle">Our platform isn't just about features; it's about delivering real-world benefits that impact your bottom line and patient satisfaction.</p>
+            <div class="benefits-grid">
+                <div class="benefit-card fade-in">
+                    <div class="benefit-stat" data-target="100">0%</div>
+                    <h3>Time Savings</h3>
+                    <p>Reduce administrative overhead, allowing more time for what matters most: patient consultations.</p>
+                </div>
+                <div class="benefit-card fade-in" style="transition-delay: 0.15s;">
+                    <div class="benefit-stat" data-target="100">0%</div>
+                    <h3>Data Accuracy</h3>
+                    <p>Our system minimizes data entry errors, ensuring highly accurate and reliable patient records.</p>
+                </div>
+                <div class="benefit-card fade-in" style="transition-delay: 0.3s;">
+                    <div class="benefit-stat" data-target="100">0%</div>
+                    <h3>Revenue Boost</h3>
+                    <p>Streamline billing and coding to increase revenue collection by an average of 100%.</p>
+                </div>
+                <div class="benefit-card fade-in" style="transition-delay: 0.45s;">
+                    <div class="benefit-stat" data-target="100">0%</div>
+                    <h3>Patient Satisfaction</h3>
+                    <p>Faster check-ins and better data access lead to a significant increase in patient satisfaction.</p>
+                </div>
+            </div>
+        </section>
+        <!-- === END OF TANGIBLE RESULTS SECTION === -->
+    </main>
+
+    <footer id="enroll-now-footer" class="footer">
+        <div class="footer-enroll-form fade-in">
+            <h4>Ready to Digitalize Your Practice?</h4>
+            <p>Fill out the form below to begin your journey with SUHAIM SOFT. We'll get in touch with you shortly.</p>
+            <form id="whatsappForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <button type="submit" class="whatsapp-submit-btn">
+                    <i class="fab fa-whatsapp"></i> Enroll Now via WhatsApp
+                </button>
+            </form>
+        </div>
+        <div class="social-icons">
+            <a href="https://www.facebook.com/share/16WXpVs2Js/" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" id="footer-wa-link" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/suhaimsoft?igsh=MWpzazg4emk2N2R3bQ==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2025 SUHAIM SOFT Systems. All Rights Reserved.</p>
+    </footer>
+
+    <a href="#home" class="scroll-to-top" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></a>
+
+    <!-- WhatsApp Floating Widget -->
+    <div class="whatsapp-widget">
+        <div class="whatsapp-popup" id="whatsapp-popup">
+            <div class="popup-header">
+                <img src="https://i.postimg.cc/Zn1bCpCN/suahim-soft-profile.jpg" alt="SUHAIM SOFT Profile" class="avatar-img">
+                <div class="header-text">
+                    <h4>SUHAIM SOFT</h4>
+                </div>
+                <button class="popup-close" id="whatsapp-close-btn">×</button>
+            </div>
+            <div class="popup-body">
+                <p>WELCOME TO SUHAIM SOFT HOW CAN I HELP YOU</p>
+            </div>
+            <div class="popup-footer">
+                <a href="https://wa.me/918891479505?text=WELCOME%20TO%20SUHAIM%20SOFT%20HOW%20CAN%20I%20HELP%20YOU" target="_blank" class="start-chat-btn">
+                    <i class="fab fa-whatsapp"></i> Start Chat
+                </a>
+            </div>
+        </div>
+        <div class="whatsapp-button" id="whatsapp-open-btn">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+    
+    <!-- intl-tel-input JS for Country Code Dropdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
+    <script>
+        // --- Preloader Script ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+            }, 500); 
+        });
+
+        // Vanta.js 3D Globe
+        VANTA.GLOBE({ el: "#vanta-bg", mouseControls: true, touchControls: true, gyroControls: false, minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00, color: 0x00a896, backgroundColor: 0x0d1b2a, size: 1.20 });
+
+        // --- Mobile Menu ---
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const navLinkItems = document.querySelectorAll('.nav-links li a');
+        hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
+        navLinkItems.forEach(link => { link.addEventListener('click', () => { if (navLinks.classList.contains('active')) { hamburger.classList.remove('active'); navLinks.classList.remove('active'); } }); });
+
+        // --- Animated Counter for Benefits Section ---
+        const counters = document.querySelectorAll('.benefit-stat');
+        const speed = 200; // The lower the #, the faster the count
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const updateCount = () => {
+                const count = +counter.innerText.replace('%', '');
+                const inc = target / speed;
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + inc) + '%';
+                    setTimeout(updateCount, 15);
+                } else {
+                    counter.innerText = target + '%';
+                }
+            };
+            updateCount();
+        };
+        
+        const counterObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(counter => counterObserver.observe(counter));
+
+
+        // --- Scroll Animations for other sections ---
+        const faders = document.querySelectorAll('.fade-in');
+        const appearOnScroll = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        faders.forEach(fader => appearOnScroll.observe(fader));
+        
+        // --- Scroll to Top Button ---
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+
+        // --- WhatsApp Floating Widget ---
+        const openWaBtn = document.getElementById('whatsapp-open-btn');
+        const closeWaBtn = document.getElementById('whatsapp-close-btn');
+        const waPopup = document.getElementById('whatsapp-popup');
+        const footerWaLink = document.getElementById('footer-wa-link');
+        const openWaPopup = (e) => {
+            if (e) e.preventDefault();
+            waPopup.classList.add('active');
+        };
+        openWaBtn.addEventListener('click', openWaPopup);
+        footerWaLink.addEventListener('click', openWaPopup);
+        closeWaBtn.addEventListener('click', () => { waPopup.classList.remove('active'); });
+        
+        // --- Theme Switcher ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                themeToggle.checked = true;
+            } else {
+                body.classList.remove('dark-theme');
+                themeToggle.checked = false;
+            }
+        };
+
+        themeToggle.addEventListener('change', () => {
+            if (body.classList.contains('dark-theme')) {
+                localStorage.setItem('theme', 'light');
+                applyTheme('light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+                applyTheme('dark');
+            }
+        });
+
+        const savedTheme = localStorage.getItem('theme') || 'light'; 
+        applyTheme(savedTheme);
+
+        // --- Country Code Phone Input & WhatsApp Form Submission (FIXED) ---
+        const phoneInputField = document.querySelector("#phone");
+        const phoneInput = window.intlTelInput(phoneInputField, {
+            initialCountry: "in",
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        });
+
+        const whatsappForm = document.getElementById('whatsappForm');
+        whatsappForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent the form from submitting normally
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            // Check if the phone number is valid before proceeding
+            if (!phoneInput.isValidNumber()) {
+                alert('Please enter a valid phone number.');
+                return; // Stop the function if number is invalid
+            }
+            
+            const fullPhoneNumber = phoneInput.getNumber(); // Gets the number with country code
+
+            // Your WhatsApp number (with country code, without '+')
+            // THIS WAS THE FIX: Corrected typo from 'yourWAMumber' to 'yourWANumber'
+            const yourWANumber = '918891479505';
+
+            // Create the raw message text with WhatsApp formatting (* for bold)
+            const messageText = 
+                `*New Enrollment from SUHAIM SOFT Website*\n\n` +
+                `*Name:* ${name}\n` +
+                `*Email:* ${email}\n` +
+                `*Phone:* ${fullPhoneNumber}\n\n` +
+                `I'm interested in a demo.`;
+
+            // URL-encode the message text to make it safe for a URL
+            const encodedMessage = encodeURIComponent(messageText);
+
+            // Create the final WhatsApp URL
+            // THIS WAS THE FIX: Using the corrected variable name
+            const whatsappURL = `https://wa.me/${yourWANumber}?text=${encodedMessage}`;
+
+            // Open the URL in a new tab
+            window.open(whatsappURL, '_blank');
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Prescription</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/medicine.png" type="image/png">
+  <style>
+    :root {
+      --bg-color: #eef2f7;
+      --primary-color: #0062ff;
+      --primary-light: #6997ff;
+      --text-color: #5b648c;
+      --text-dark: #333950;
+      --accent-red: #e74c3c;
+      --shadow-light: #ffffff;
+      --shadow-dark: #d9e0e7;
+      --border-radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes slideUpFadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Loader/Spinner Styles --- */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 20px;
+      transition: opacity 0.5s ease;
+    }
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid var(--primary-color);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1.5s linear infinite;
+    }
+    #loader-wrapper p {
+        color: var(--text-dark);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* --- End Loader Styles --- */
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: var(--text-color);
+    }
+
+    .container {
+      display: none; /* Hidden by default, shown by JS after load */
+      max-width: 1200px;
+      width: 100%;
+      background-color: var(--bg-color);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+      animation: fadeInScale 0.6s ease-out forwards;
+    }
+    
+    .top-nav-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--text-dark);
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 2.5rem;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+    
+    .form-section h3 {
+        font-size: 1.25rem;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 8px;
+        margin-left: 12px;
+        min-width: 28px;
+        transition: all 0.3s ease;
+    }
+    .count-badge:empty { transform: scale(0); opacity: 0; }
+
+    .input-group { margin-bottom: 1.5rem; }
+    label { font-weight: 500; margin-bottom: 8px; font-size: 0.9rem; display: block; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: var(--border-radius);
+      border: none;
+      background-color: var(--bg-color);
+      box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      transition: box-shadow 0.3s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light),
+                  0 0 0 2px var(--primary-color);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .management-section { margin-bottom: 2.5rem; }
+    .button-group { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+    .soft-button {
+      padding: 14px 22px;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: var(--bg-color);
+      color: var(--text-color);
+      box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .soft-button svg {
+        stroke-width: 2.5;
+    }
+    .soft-button:hover { color: var(--primary-color); }
+    .soft-button:active {
+      box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+      color: var(--primary-light);
+    }
+
+    .save-btn {
+        width: 100%; color: white; background: var(--primary-color);
+        box-shadow: 5px 5px 10px #0045b8, -5px -5px 10px var(--primary-light);
+        margin-top: 1.5rem;
+    }
+    .save-btn:hover { background: var(--primary-light); color: white; }
+    .save-btn:active { background: var(--primary-color); box-shadow: inset 5px 5px 10px #0045b8, inset -5px -5px 10px var(--primary-light); }
+    
+    #medicine-container { display: grid; gap: 1rem; }
+    
+    .medicine-entry {
+      background: var(--bg-color); border-radius: 16px;
+      box-shadow: 7px 7px 15px var(--shadow-dark), -7px -7px 15px var(--shadow-light);
+      animation: slideUpFadeIn 0.5s ease-out forwards;
+      opacity: 0; padding: 1rem;
+    }
+
+    .med-card-main { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+    .med-card-main .input-group { flex: 1 1 150px; margin-bottom: 0; }
+    .med-card-main .med-name-group { flex-grow: 2; }
+    .med-card-actions { display: flex; gap: 0.5rem; }
+
+    .details-toggle-btn, .remove-med-btn { height: 51px; width: 51px; padding: 0; }
+    .details-toggle-btn .icon { transition: transform 0.3s ease-in-out; }
+    .medicine-entry.expanded .details-toggle-btn .icon { transform: rotate(180deg); }
+    .remove-med-btn { color: var(--accent-red); }
+    .remove-med-btn:hover { color: #c0392b; }
+
+    .med-card-details { max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; opacity: 0; }
+    .medicine-entry.expanded .med-card-details { max-height: 800px; margin-top: 1.5rem; opacity: 1; }
+
+    .tapering-section { margin-top: 1rem; padding: 1rem; border-radius: 8px; background-color: var(--bg-color); box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light); animation: fadeInScale 0.4s ease; }
+    .tapering-row { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+    .tapering-row:last-child { margin-bottom: 0; }
+    .remove-tapering { padding: 0; width: 40px; height: 40px; border-radius: 50%; color: var(--accent-red); }
+    .remove-tapering:hover { color: #c0392b; }
+    .add-tapering { padding: 10px 15px; }
+
+    @media (max-width: 768px) {
+      body { padding: 1.5rem 0.5rem; }
+      .container { padding: 1.5rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .button-group { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader-wrapper">
+    <div class="loader"></div>
+    <p>Loading Prescription...</p>
+  </div>
+
+  <div class="container">
+    <div class="top-nav-buttons">
+        <a href="prescriptions.html" class="soft-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Back to Prescriptions</span>
+        </a>
+    </div>
+
+    <h2>Edit Prescription</h2>
+
+    <div class="form-grid">
+      <div class="form-section">
+        <h3>Patient & Vitals</h3>
+        <div class="input-group"><label for="pname">Patient Name</label><input id="pname" type="text" list="nameList" placeholder="Enter name" /></div>
+        <div class="input-group"><label for="pmobile">Mobile</label><input id="pmobile" type="tel" placeholder="Enter mobile (optional)" /></div>
+        <div class="input-group"><label for="page">Age</label><input id="page" type="number" placeholder="Enter age" /></div>
+        <div class="input-group"><label for="weight">Weight (kg)</label><input id="weight" type="number" placeholder="e.g., 70" /></div>
+      </div>
+      <div class="form-section">
+        <h3>Diagnosis & Checks</h3>
+        <div class="input-group"><label for="pdiagnosis">Diagnosis</label><input id="pdiagnosis" type="text" list="diagnosisList" placeholder="Select or enter diagnosis" /></div>
+        <div class="input-group"><label for="labtest">Lab Test</label><input id="labtest" type="text" list="labTestList" placeholder="Select or enter lab test(s)" /></div>
+        <div class="input-group">
+            <label for="labReportStatus">Lab Report</label>
+            <select id="labReportStatus">
+              <option value="" selected>Not Applicable</option>
+              <option value="available">Available</option>
+              <option value="requested">Requested</option>
+              <option value="pending">Pending</option>
+            </select>
+        </div>
+        <div class="input-group"><label for="bp">BP (mmHg)</label><input id="bp" type="text" placeholder="e.g., 120/80" /></div>
+        <div class="input-group"><label for="pulse">Pulse (bpm)</label><input id="pulse" type="number" placeholder="e.g., 72" /></div>
+        <div class="input-group"><label for="spo2">SpO2 (%)</label><input id="spo2" type="number" placeholder="e.g., 98" /></div>
+        <div class="input-group"><label for="temperature">Temperature (°F)</label><input id="temperature" type="number" step="0.1" placeholder="e.g., 98.6" /></div>
+      </div>
+    </div>
+
+    <div class="management-section">
+      <h3>Medication <span id="medicine-count-badge" class="count-badge"></span></h3>
+      <div class="button-group">
+        <button class="soft-button" onclick="addMedicineEntry()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add Medicine</span></button>
+        <button class="soft-button" onclick="addNewMedicine()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add to Master List</span></button>
+        <button class="soft-button" onclick="deleteMedicineName()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Remove from Master List</span></button>
+        <button class="soft-button" onclick="addNewDosageOption()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add New Dosage</span></button>
+        <button class="soft-button" onclick="deleteDosageOption()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Delete Dosage</span></button>
+        <button class="soft-button" onclick="addNewTypeOption()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add New Type</span></button>
+        <button class="soft-button" onclick="deleteTypeOption()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Delete Type</span></button>
+      </div>
+    </div>
+
+    <div id="medicine-container">
+      <datalist id="medicineOptions"></datalist>
+      <datalist id="diagnosisList"><option value="Fever (Pyrexia)"></option><option value="Common Cold"></option><option value="Hypertension"></option></datalist>
+      <datalist id="labTestList"><option value="CBE"></option><option value="RFT"></option><option value="LFT"></option></datalist>
+      <datalist id="nameList"></datalist>
+    </div>
+
+    <button class="soft-button save-btn" onclick="saveChanges()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        <span>Save Changes</span>
+    </button>
+  </div>
+
+  <script>
+    // --- STORAGE KEYS & DEFAULTS ---
+    const medicineListStorageKey = "medicineNamesList";
+    const dosageListStorageKey = "customDosageList";
+    const typeListStorageKey = "customTypeList";
+    
+    const defaultMedicineNames = [ "Paracetamol", "Amoxicillin", "Metformin", "Amlodipine", "Atorvastatin", "Omeprazole", "Montelukast" ];
+    const defaultDosages = [ "¼ tab", "½ tab", "1 tab", "1-0-1", "1-1-1", "0-0-1", "OD", "BD", "TDS", "SOS", "5 ml", "10 ml", "Before Food", "After Food" ];
+    const defaultTypes = ["Tablet", "Capsule", "Syrup", "Injection", "Ointment", "Drops", "Suspension", "Cream", "Inhaler"];
+    
+    const fieldHistories = { pname: "history_names", pdiagnosis: "history_diagnosis" };
+    
+    // --- LIVE DATA VARIABLES ---
+    let medicineList = [];
+    let dosageList = [];
+    let typeList = [];
+    let editRxIndex = null;
+
+    // --- GENERIC STORAGE FUNCTIONS ---
+    function getStoredData(key, defaultValue = []) {
+      try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+      } catch (e) {
+        console.error(`Error reading ${key} from localStorage:`, e);
+        return defaultValue;
+      }
+    }
+    
+    function saveStoredData(key, data) {
+      try {
+        const sortedData = [...data].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        localStorage.setItem(key, JSON.stringify(sortedData));
+      } catch (e) {
+        console.error(`Error saving ${key} to localStorage:`, e);
+        alert("Could not save data. Your browser storage might be full or disabled.");
+      }
+    }
+
+    // --- REAL-TIME UI UPDATE FUNCTIONS ---
+    function updateAllDosageSelects() {
+        const newOptionsHTML = dosageList.map(d => `<option value="${d}">${d}</option>`).join('');
+        document.querySelectorAll('.med-dose, .taper-dose').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = newOptionsHTML;
+            if (dosageList.includes(currentValue)) { select.value = currentValue; }
+        });
+    }
+
+    function updateAllTypeSelects() {
+        const newOptionsHTML = typeList.map(t => `<option value="${t}">${t}</option>`).join('');
+        document.querySelectorAll('.med-type').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = newOptionsHTML;
+            if (typeList.includes(currentValue)) { select.value = currentValue; }
+        });
+    }
+    
+    function updateMedicineDatalist() {
+      const datalist = document.getElementById("medicineOptions");
+      if (datalist) { datalist.innerHTML = medicineList.map(name => `<option value="${name}"></option>`).join(''); }
+    }
+
+    function updateMedicineCount() {
+        const count = document.querySelectorAll('.medicine-entry').length;
+        const badge = document.getElementById('medicine-count-badge');
+        if (badge) { badge.textContent = count > 0 ? count : ''; }
+    }
+    
+    // --- MEDICINE CARD FUNCTIONS ---
+    function toggleDetails(button) { button.closest('.medicine-entry').classList.toggle('expanded'); }
+    function removeMedicineEntry(button) { button.closest('.medicine-entry').remove(); updateMedicineCount(); }
+
+    function addMedicineEntry(med = {}) {
+      const medDiv = document.createElement("div");
+      const hasDetails = med.remark || med.content || (med.tapering && med.tapering.length > 0);
+      medDiv.className = `medicine-entry ${hasDetails ? 'expanded' : ''}`;
+      
+      const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      const daysValue = med.days ?? 1;
+
+      medDiv.innerHTML = `
+        <div class="med-card-main">
+            <div class="input-group med-name-group"><label for="med-name-${uniqueSuffix}">Medicine Name</label><input id="med-name-${uniqueSuffix}" class="med-name" type="text" list="medicineOptions" placeholder="Start typing..." value="${med.name || ''}" /></div>
+            <div class="input-group"><label for="med-type-${uniqueSuffix}">Type</label><select id="med-type-${uniqueSuffix}" class="med-type">${typeList.map(t => `<option value="${t}" ${med.type === t ? 'selected' : ''}>${t}</option>`).join("")}</select></div>
+            <div class="input-group"><label for="med-dose-${uniqueSuffix}">Dosage</label><select id="med-dose-${uniqueSuffix}" class="med-dose">${dosageList.map(d => `<option value="${d}" ${med.dosage === d ? 'selected' : ''}>${d}</option>`).join("")}</select></div>
+            <div class="input-group"><label for="med-days-${uniqueSuffix}">Days</label><input id="med-days-${uniqueSuffix}" class="med-days" type="number" min="0" value="${daysValue}" /></div>
+            <div class="med-card-actions">
+                <button type="button" class="soft-button details-toggle-btn" onclick="toggleDetails(this)" title="Toggle Details"><svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <button type="button" class="soft-button remove-med-btn" onclick="removeMedicineEntry(this)" title="Remove Medicine"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+        </div>
+        <div class="med-card-details">
+            <div class="input-group"><label for="med-remark-${uniqueSuffix}">Remark / Instructions</label><textarea id="med-remark-${uniqueSuffix}" class="med-remark" placeholder="e.g., After food, SOS for pain...">${med.remark || ''}</textarea></div>
+            <div class="input-group"><label for="med-content-${uniqueSuffix}">Additional Content</label><textarea id="med-content-${uniqueSuffix}" class="med-content" placeholder="e.g., Pharmacy instructions, special notes...">${med.content || ''}</textarea></div>
+            <div class="tapering-toggle">
+                <input type="checkbox" class="tapering-checkbox" id="taper-check-${uniqueSuffix}" ${med.tapering ? 'checked' : ''} onchange="this.closest('.med-card-details').querySelector('.tapering-section').style.display = this.checked ? 'block' : 'none'">
+                <label for="taper-check-${uniqueSuffix}">Tapering Required</label>
+            </div>
+            <div class="tapering-section" style="display:${med.tapering ? 'block' : 'none'};">
+                <div class="tapering-entries">${med.tapering && Array.isArray(med.tapering) ? med.tapering.map(t => `<div class="tapering-row"><select class="taper-dose">${dosageList.map(d => `<option value="${d}" ${t.dosage === d ? 'selected' : ''}>${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" value="${t.days || ''}" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>`).join("") : ''}</div>
+                <button type="button" class="soft-button add-tapering" onclick="addTaperingRow(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add Step</span></button>
+            </div>
+        </div>
+      `;
+      document.getElementById("medicine-container").appendChild(medDiv);
+      updateMedicineCount();
+    }
+    
+    function addTaperingRow(button) {
+      const taperingEntries = button.closest('.tapering-section').querySelector('.tapering-entries');
+      const newRow = document.createElement('div');
+      newRow.className = 'tapering-row';
+      newRow.innerHTML = `<select class="taper-dose">${dosageList.map(d => `<option value="${d}">${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>`;
+      taperingEntries.appendChild(newRow);
+    }
+
+    // --- MASTER LIST MANAGEMENT FUNCTIONS ---
+    function addNewMedicine() {
+      const newMedicineName = prompt("Enter new medicine name for master list:");
+      if (!newMedicineName || !newMedicineName.trim()) return;
+      
+      const trimmedName = newMedicineName.trim(); 
+      if (medicineList.some(n => n.toLowerCase() === trimmedName.toLowerCase())) { 
+          alert(`"${trimmedName}" already exists in the master list.`); return; 
+      }
+      medicineList.push(trimmedName); 
+      saveStoredData(medicineListStorageKey, medicineList);
+      updateMedicineDatalist();
+      alert(`✅ "${trimmedName}" has been added to the master list.`);
+    }
+
+    function deleteMedicineName() {
+      const nameToDelete = prompt("Enter medicine name to delete from master list:");
+      if (!nameToDelete || !nameToDelete.trim()) return;
+        
+      const trimmedName = nameToDelete.trim(); 
+      const initialLength = medicineList.length;
+      medicineList = medicineList.filter(n => n.toLowerCase() !== trimmedName.toLowerCase());
+      
+      if (medicineList.length < initialLength) { 
+          saveStoredData(medicineListStorageKey, medicineList);
+          updateMedicineDatalist();
+          alert(`✅ "${trimmedName}" has been deleted from the master list.`); 
+      } else { 
+          alert(`❌ "${trimmedName}" was not found in the master list.`); 
+      }
+    }
+
+    function addNewDosageOption() {
+        const newDosage = prompt("Enter new dosage option (e.g., '2 tabs', 'q.i.d'):");
+        if (!newDosage || !newDosage.trim()) return;
+        const trimmedDosage = newDosage.trim();
+        if (dosageList.some(d => d.toLowerCase() === trimmedDosage.toLowerCase())) {
+            alert(`Dosage option "${trimmedDosage}" already exists.`); return;
+        }
+        dosageList.push(trimmedDosage);
+        saveStoredData(dosageListStorageKey, dosageList);
+        updateAllDosageSelects(); // Real-time update
+        alert(`✅ Dosage option "${trimmedDosage}" has been added.`);
+    }
+
+    function deleteDosageOption() {
+        const dosageToDelete = prompt("Enter dosage option to delete:");
+        if (!dosageToDelete || !dosageToDelete.trim()) return;
+        const trimmedDosage = dosageToDelete.trim();
+        const initialLength = dosageList.length;
+        dosageList = dosageList.filter(d => d.toLowerCase() !== trimmedDosage.toLowerCase());
+        if (dosageList.length < initialLength) {
+            saveStoredData(dosageListStorageKey, dosageList);
+            updateAllDosageSelects(); // Real-time update
+            alert(`✅ Dosage option "${trimmedDosage}" has been deleted.`);
+        } else {
+            alert(`❌ Dosage option "${trimmedDosage}" not found.`);
+        }
+    }
+
+    function addNewTypeOption() {
+        const newType = prompt("Enter new medicine type (e.g., 'Gel', 'Patch'):");
+        if (!newType || !newType.trim()) return;
+        const trimmedType = newType.trim();
+        if (typeList.some(t => t.toLowerCase() === trimmedType.toLowerCase())) {
+            alert(`Type "${trimmedType}" already exists.`); return;
+        }
+        typeList.push(trimmedType);
+        saveStoredData(typeListStorageKey, typeList);
+        updateAllTypeSelects(); // Real-time update
+        alert(`✅ Type "${trimmedType}" has been added.`);
+    }
+
+    function deleteTypeOption() {
+        const typeToDelete = prompt("Enter medicine type to delete:");
+        if (!typeToDelete || !typeToDelete.trim()) return;
+        const trimmedType = typeToDelete.trim();
+        const initialLength = typeList.length;
+        typeList = typeList.filter(t => t.toLowerCase() !== trimmedType.toLowerCase());
+        if (typeList.length < initialLength) {
+            saveStoredData(typeListStorageKey, typeList);
+            updateAllTypeSelects(); // Real-time update
+            alert(`✅ Type "${trimmedType}" has been deleted.`);
+        } else {
+            alert(`❌ Type "${trimmedType}" not found.`);
+        }
+    }
+    
+    // --- CORE SAVE & HISTORY FUNCTIONS ---
+    function updateHistory(fieldId, value) {
+      if (!value || !fieldHistories[fieldId]) return;
+      const key = fieldHistories[fieldId];
+      let history = getStoredData(key, []);
+      if (!history.some(item => item.toLowerCase() === value.toLowerCase())) {
+        history.push(value);
+        if (history.length > 50) history.shift();
+        saveStoredData(key, history.filter(Boolean));
+      }
+    }
+
+    function saveChanges() {
+      if (!document.getElementById("pname").value.trim()) { 
+          alert("❌ Patient Name is required."); return; 
+      }
+      
+      const updatedRx = {
+        name: document.getElementById("pname").value.trim(), phone: document.getElementById("pmobile").value.trim(),
+        age: document.getElementById("page").value, diagnosis: document.getElementById("pdiagnosis").value.trim(),
+        bp: document.getElementById("bp").value, pulse: document.getElementById("pulse").value,
+        spo2: document.getElementById("spo2").value, temperature: document.getElementById("temperature").value,
+        weight: document.getElementById("weight").value, labtest: document.getElementById("labtest").value,
+        labReportStatus: document.getElementById("labReportStatus").value, date: new Date().toISOString(),
+        medicines: []
+      };
+
+      let isValid = true;
+      document.querySelectorAll(".medicine-entry").forEach((entry, index) => {
+        if (!isValid) return;
+        const medName = entry.querySelector(".med-name").value.trim();
+        if (!medName) {
+            alert(`❌ Medicine Name is required for entry #${index + 1}.`); isValid = false; return;
+        }
+        const tapering = [];
+        if (entry.querySelector('.tapering-checkbox').checked) {
+          entry.querySelectorAll('.tapering-row').forEach((row, tIndex) => {
+            const days = row.querySelector('.taper-days').value;
+            const dose = row.querySelector('.taper-dose').value;
+            if (!days || parseInt(days) <= 0 || !dose) {
+                alert(`❌ Valid dosage and days (>0) required for tapering step #${tIndex+1} in medicine #${index+1}.`); isValid = false;
+            }
+            if(isValid) tapering.push({ dosage: dose, days: days });
+          });
+        }
+        if(!isValid) return;
+        updatedRx.medicines.push({
+            name: medName, type: entry.querySelector(".med-type").value, dosage: entry.querySelector(".med-dose").value,
+            days: entry.querySelector(".med-days").value || '0', remark: entry.querySelector(".med-remark").value,
+            content: entry.querySelector(".med-content").value, tapering: tapering.length > 0 ? tapering : null
+        });
+      });
+      if (!isValid) return;
+      
+      const prescriptions = getStoredData("prescriptions", []);
+      if (editRxIndex !== null && editRxIndex >= 0 && editRxIndex < prescriptions.length) {
+        prescriptions[editRxIndex] = updatedRx;
+        try {
+          localStorage.setItem("prescriptions", JSON.stringify(prescriptions));
+          updateHistory('pname', updatedRx.name);
+          updateHistory('pdiagnosis', updatedRx.diagnosis);
+          alert("✅ Prescription updated successfully!");
+          localStorage.removeItem("editPrescription"); // Clean up
+          window.location.href = "prescriptions.html";
+        } catch (e) {
+          alert("❌ Error saving prescription. Storage might be full.");
+        }
+      } else {
+          alert("❌ Error: Could not save prescription. Invalid index or data corruption.");
+      }
+    }
+    
+    // --- PAGE INITIALIZATION ---
+    window.onload = () => {
+      let setupError = null;
+      try {
+        // Load all master lists into live variables
+        medicineList = getStoredData(medicineListStorageKey, defaultMedicineNames);
+        dosageList = getStoredData(dosageListStorageKey, defaultDosages);
+        typeList = getStoredData(typeListStorageKey, defaultTypes);
+        
+        // Populate datalists from live variables
+        for (const [key, datalistId] of Object.entries({pname: "nameList", pdiagnosis: "diagnosisList", labtest: "labTestList"})) {
+            const list = document.getElementById(datalistId);
+            if (list) list.innerHTML = getStoredData(fieldHistories[key] || `history_${datalistId.replace('List', '')}`, []).map(val => `<option value="${val}"></option>`).join("");
+        }
+        updateMedicineDatalist();
+        
+        const rxToEditData = localStorage.getItem("editPrescription");
+        if (!rxToEditData) throw new Error("No prescription found to edit. Please go back and select one.");
+        
+        const rxToEdit = JSON.parse(rxToEditData);
+        editRxIndex = rxToEdit.index;
+        
+        const fieldMap = {
+            name: "pname", phone: "pmobile", age: "page", diagnosis: "pdiagnosis", weight: "weight",
+            labtest: "labtest", bp: "bp", pulse: "pulse", spo2: "spo2", temperature: "temperature",
+            labReportStatus: "labReportStatus"
+        };
+        for (const [key, elementId] of Object.entries(fieldMap)) {
+            const element = document.getElementById(elementId);
+if (element && rxToEdit[key] !== undefined) {
+                element.value = rxToEdit[key];
+            }
+        }
+        
+        if (rxToEdit.medicines?.length) { 
+            rxToEdit.medicines.forEach(med => addMedicineEntry(med)); 
+        }
+        updateMedicineCount();
+
+      } catch (e) {
+        console.error("Initialization Error:", e);
+        setupError = e.message || "Could not load prescription data. It may be corrupted.";
+      }
+
+      // Hide loader and show content (or error)
+      setTimeout(() => {
+        document.getElementById('loader-wrapper').style.display = 'none';
+        if (setupError) {
+          alert(`❌ Error: ${setupError}`);
+          window.location.href = "prescriptions.html";
+        } else {
+          document.querySelector('.container').style.display = 'block';
+        }
+      }, 300); 
+    };
+  </script>
+</body>
+</html>
