@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -171,8 +171,9 @@
   </style>
 </head>
 <body>
+<div id='liveData' style='padding:10px; background:#f9f9f9; border:1px solid #ccc;'>⏳ Waiting for real-time update...</div>
 
-<a href="prescriptions.html" class="back-button">← Back to Patient List</a>
+<a href="prescriptions.html" class="back-button">â† Back to Patient List</a>
 
 <div class="main-container">
   <div class="prescription-panel" id="prescription-panel">
@@ -368,7 +369,7 @@
         { field: "Name", value: name, vitals: "SpO2", vitalsValue: spo2 }, 
         { field: "Phone", value: phone, vitals: "BP", vitalsValue: bp },
         { field: "Age", value: age, vitals: "Pulse", vitalsValue: pulse },
-        { field: "Diagnosis", value: diagnosis, vitals: "Temp (°F)", vitalsValue: temp },
+        { field: "Diagnosis", value: diagnosis, vitals: "Temp (Â°F)", vitalsValue: temp },
         { field: "Date & Time", value: date, vitals: "Weight", vitalsValue: weight }
       ];
 
@@ -552,5 +553,6 @@
   }
 </script>
 
-</body>
+<script src="jun.js"></script>`n</body>
 </html>
+

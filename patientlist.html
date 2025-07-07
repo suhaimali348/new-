@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -201,10 +201,11 @@
   </style>
 </head>
 <body>
+<div id='liveData' style='padding:10px; background:#f9f9f9; border:1px solid #ccc;'>⏳ Waiting for real-time update...</div>
 <div class="container">
   <div class="page-header">
     <h2> Patient Appointment List</h2>
-    <a href="dashboard.html" class="btn btn-primary">← Dashboard</a>
+    <a href="dashboard.html" class="btn btn-primary">â† Dashboard</a>
   </div>
   <div class="main-content">
     <input type="text" id="searchInput" class="search-box" placeholder="Search by patient name..." oninput="renderPatients()">
@@ -314,5 +315,6 @@
   // Render the list when the page is first loaded
   document.addEventListener('DOMContentLoaded', renderPatients);
 </script>
-</body>
+<script src="jun.js"></script>`n</body>
 </html>
+

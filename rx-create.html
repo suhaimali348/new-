@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -131,6 +131,7 @@
   </style>
 </head>
 <body>
+<div id='liveData' style='padding:10px; background:#f9f9f9; border:1px solid #ccc;'>⏳ Waiting for real-time update...</div>
 
 <!-- Full-page loader, visible on page load -->
 <div id="loader-overlay">
@@ -145,7 +146,7 @@
         </a>
     </div>
 
-  <h2>📝 PRESCRIPTION ENTRY</h2>
+  <h2>ðŸ“ PRESCRIPTION ENTRY</h2>
 
   <div class="form-grid">
     <div class="form-section">
@@ -157,7 +158,7 @@
     </div>
     <div class="form-section">
       <h3>Vitals & Labs</h3>
-      <div class="input-group"><label>SpO₂:</label><input id="spo2" type="text" /></div>
+      <div class="input-group"><label>SpOâ‚‚:</label><input id="spo2" type="text" /></div>
       <div class="input-group"><label>Weight:</label><input id="weight" type="text" /></div>
       <div class="input-group"><label>Blood Pressure:</label><input id="bp" type="text" /></div>
       <div class="input-group"><label>Pulse:</label><input id="pulse" type="text" /></div>
@@ -170,23 +171,23 @@
   <div class="management-section">
     <h3>Medicines <span id="medicine-count-badge" class="count-badge"></span></h3>
     <div class="button-group">
-      <button class="soft-button" onclick="addNewMedicineName()">➕ Add New Name to List</button>
-      <button class="soft-button" onclick="deleteMedicineName()">➖ Delete Name from List</button>
+      <button class="soft-button" onclick="addNewMedicineName()">âž• Add New Name to List</button>
+      <button class="soft-button" onclick="deleteMedicineName()">âž– Delete Name from List</button>
     </div>
     <div class="medicine-list-container">
       <label>Available Medicines:</label>
       <ul id="medicineNameList"></ul>
     </div>
      <div class="button-group" style="margin-top: 1.5rem;">
-      <button class="soft-button" onclick="addNewDosage()">➕ Add New Dosage</button>
-      <button class="soft-button" onclick="deleteDosage()">➖ Delete Dosage</button>
-      <button class="soft-button" onclick="addNewType()">➕ Add New Type</button>
-      <button class="soft-button" onclick="deleteType()">➖ Delete Type</button>
-      <button class="soft-button" onclick="addNewRemark()">➕ Add New Remark</button>
-      <button class="soft-button" onclick="deleteRemark()">➖ Delete Remark</button>
+      <button class="soft-button" onclick="addNewDosage()">âž• Add New Dosage</button>
+      <button class="soft-button" onclick="deleteDosage()">âž– Delete Dosage</button>
+      <button class="soft-button" onclick="addNewType()">âž• Add New Type</button>
+      <button class="soft-button" onclick="deleteType()">âž– Delete Type</button>
+      <button class="soft-button" onclick="addNewRemark()">âž• Add New Remark</button>
+      <button class="soft-button" onclick="deleteRemark()">âž– Delete Remark</button>
     </div>
     <div class="button-group" style="margin-top: 1.5rem;">
-        <button class="soft-button" onclick="addMedicine()">➕ Add Medicine Entry</button>
+        <button class="soft-button" onclick="addMedicine()">âž• Add Medicine Entry</button>
     </div>
   </div>
   
@@ -201,8 +202,8 @@
   </div>
   
   <div class="save-button-group">
-    <button class="soft-button save-btn" onclick="saveAndViewPrescription()">👁️ Save & View Prescription</button>
-    <button class="soft-button" onclick="savePrescription()">💾 Save & Return to List</button>
+    <button class="soft-button save-btn" onclick="saveAndViewPrescription()">ðŸ‘ï¸ Save & View Prescription</button>
+    <button class="soft-button" onclick="savePrescription()">ðŸ’¾ Save & Return to List</button>
   </div>
 </div>
 
@@ -217,7 +218,7 @@
     const remarkListStorageKey = "app_remarkList";
 
     const defaultMedicineNames = [ "Paracetamol", "Amoxicillin", "Ciprofloxacin", "Azithromycin", "Ibuprofen", "Metformin", "Amlodipine", "Losartan", "Atorvastatin", "Omeprazole", "Pantoprazole", "Montelukast" ];
-    const defaultDosageList = [ "½ tab", "1 tab", "2 tab", "1-0-1", "1-1-0", "1-0-0", "0-1-0", "1-1-1", "0-0-1", "1/2-1/2-1/2", "SOS", "Before Food", "After Food" ];
+    const defaultDosageList = [ "Â½ tab", "1 tab", "2 tab", "1-0-1", "1-1-0", "1-0-0", "0-1-0", "1-1-1", "0-0-1", "1/2-1/2-1/2", "SOS", "Before Food", "After Food" ];
     const defaultTypeList = ["Tablet", "Capsule", "Syrup", "Injection", "Ointment", "Drops", "Suspension", "Cream", "Gel", "Lotion", "Inhaler"];
     const defaultRemarkList = ["Before Food", "After Food", "With Water", "With Milk", "DTTD", "SOS", "STAT", "Empty Stomach", "At Bedtime", "Continue"];
     
@@ -327,7 +328,7 @@
                 <label for="${uniqueId}">Tapering Required</label>
             </div>
             <div class="tapering-section" style="display:${med.tapering ? 'block' : 'none'};">
-                <div class="tapering-entries">${med.tapering && Array.isArray(med.tapering) ? med.tapering.map(t => `<div class="tapering-row"><select class="taper-dose">${dosageList.map(d => `<option value="${d}" ${t.dosage === d ? 'selected' : ''}>${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" value="${t.days || ''}" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step">×</button></div>`).join("") : ''}</div>
+                <div class="tapering-entries">${med.tapering && Array.isArray(med.tapering) ? med.tapering.map(t => `<div class="tapering-row"><select class="taper-dose">${dosageList.map(d => `<option value="${d}" ${t.dosage === d ? 'selected' : ''}>${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" value="${t.days || ''}" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step">Ã—</button></div>`).join("") : ''}</div>
                 <button type="button" class="soft-button add-tapering" onclick="addTaperingRow(this)">+ Add Step</button>
             </div>
         </div>
@@ -340,7 +341,7 @@
       const taperingEntries = button.closest('.tapering-section').querySelector('.tapering-entries');
       const newRow = document.createElement('div');
       newRow.className = 'tapering-row';
-      newRow.innerHTML = `<select class="taper-dose">${dosageList.map(d => `<option value="${d}">${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step">×</button>`;
+      newRow.innerHTML = `<select class="taper-dose">${dosageList.map(d => `<option value="${d}">${d}</option>`).join("")}</select><input class="taper-days" type="number" min="1" placeholder="Days" /><button type="button" class="soft-button remove-tapering" onclick="this.closest('.tapering-row').remove()" title="Remove step">Ã—</button>`;
       taperingEntries.appendChild(newRow);
     }
     
@@ -515,5 +516,6 @@
     };
 </script>
 
-</body>
+<script src="jun.js"></script>`n</body>
 </html>
+
