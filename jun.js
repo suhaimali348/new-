@@ -1,22 +1,22 @@
 ﻿(() => {
-  const ws = new WebSocket('ws://localhost:3000');
+  const ws = new WebSocket('wss://your-heroku-app-name.herokuapp.com');
 
-  ws.addEventListener('open', () => {
+  ws.onopen = () => {
     console.log('WebSocket connected');
-  });
+  };
 
-  ws.addEventListener('message', event => {
-    const liveDataDiv = document.getElementById('timeDisplay');
+  ws.onmessage = event => {
+    const liveDataDiv = document.getElementById('liveData');
     if (liveDataDiv) {
       liveDataDiv.textContent = event.data;
     }
-  });
+  };
 
-  ws.addEventListener('error', error => {
+  ws.onerror = error => {
     console.error('WebSocket error:', error);
-  });
+  };
 
-  ws.addEventListener('close', () => {
+  ws.onclose = () => {
     console.log('WebSocket connection closed');
-  });
+  };
 })();
